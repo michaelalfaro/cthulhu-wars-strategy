@@ -9,6 +9,7 @@ export const navigation: NavItem[] = [
     title: "Overview",
     href: "/guide/overview",
     children: [
+      { title: "Game Setup", href: "/guide/overview/game-setup" },
       { title: "Basics", href: "/guide/overview/basics" },
       { title: "Advanced Tactics", href: "/guide/overview/advanced-tactics" },
       { title: "Threat Assessment", href: "/guide/overview/threat-assessment" },

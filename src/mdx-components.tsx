@@ -5,6 +5,8 @@ import {
   SpellbookChecklist,
   MatchupTable,
   TranscriptReference,
+  SetupChecklist,
+  GameSetupChecklist,
 } from "@/components/guide";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -14,6 +16,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     SpellbookChecklist,
     MatchupTable,
     TranscriptReference,
+    SetupChecklist,
+    GameSetupChecklist,
     ...components,
   };
 }

@@ -10,6 +10,8 @@ import {
   SpellbookChecklist,
   MatchupTable,
   TranscriptReference,
+  SetupChecklist,
+  GameSetupChecklist,
 } from "@/components/guide";
 
 const mdxComponents = {
@@ -18,6 +20,8 @@ const mdxComponents = {
   SpellbookChecklist,
   MatchupTable,
   TranscriptReference,
+  SetupChecklist,
+  GameSetupChecklist,
 };
 
 interface GuidePageProps {
