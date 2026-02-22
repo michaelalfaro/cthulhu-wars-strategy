@@ -20,6 +20,13 @@ export function Header({ onMenuToggle }: { onMenuToggle: () => void }) {
         <SearchBar />
       </div>
 
+      <Link
+        href="/tracker"
+        className="font-heading text-sm text-bone-muted transition-colors hover:text-bone"
+      >
+        🎲 Tracker
+      </Link>
+
       <button
         onClick={onMenuToggle}
         className="shrink-0 text-bone-muted hover:text-bone lg:hidden"
