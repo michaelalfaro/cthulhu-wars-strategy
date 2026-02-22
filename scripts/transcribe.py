@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
 Transcribe Opening the Way podcast episodes using OpenAI Whisper API.
+Splits large files (>25MB) into chunks via ffmpeg before sending.
 Outputs markdown files with timestamps.
 """
 
 import json
 import os
 import re
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from openai import OpenAI
@@ -19,6 +22,8 @@ AUDIO_DIR = PROJECT_DIR / "content" / "transcripts" / "audio"
 OUTPUT_DIR = PROJECT_DIR / "content" / "transcripts"
 EPISODES_JSON = SCRIPT_DIR / "episodes.json"
 GAME_TERMS_FILE = SCRIPT_DIR / "game-terms.txt"
+
+MAX_FILE_SIZE_MB = 24  # Stay under 25MB API limit
 
 
 def load_game_terms() -> dict[str, str]:
@@ -50,6 +55,46 @@ def format_timestamp(seconds: float) -> str:
     return f"{m:02d}:{s:02d}"
 
 
+def get_audio_duration(audio_path: Path) -> float:
+    """Get duration of audio file in seconds using ffprobe."""
+    result = subprocess.run(
+        ["ffprobe", "-v", "quiet", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", str(audio_path)],
+        capture_output=True, text=True
+    )
+    return float(result.stdout.strip())
+
+
+def split_audio(audio_path: Path, max_size_mb: float) -> list[Path]:
+    """Split audio file into chunks under max_size_mb using ffmpeg."""
+    file_size_mb = audio_path.stat().st_size / (1024 * 1024)
+    if file_size_mb <= max_size_mb:
+        return [audio_path]
+
+    duration = get_audio_duration(audio_path)
+    num_chunks = int(file_size_mb / max_size_mb) + 1
+    chunk_duration = duration / num_chunks
+
+    tmp_dir = Path(tempfile.mkdtemp(prefix="cw_transcribe_"))
+    chunks = []
+
+    for i in range(num_chunks):
+        start = i * chunk_duration
+        chunk_path = tmp_dir / f"chunk_{i:03d}.mp3"
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", str(audio_path),
+             "-ss", str(start), "-t", str(chunk_duration),
+             "-acodec", "libmp3lame", "-ab", "64k",
+             "-ar", "16000", "-ac", "1",
+             chunk_path],
+            capture_output=True
+        )
+        if chunk_path.exists() and chunk_path.stat().st_size > 0:
+            chunks.append(chunk_path)
+
+    return chunks
+
+
 def transcribe_episode(client: OpenAI, episode: dict, terms: dict[str, str]) -> str:
     """Transcribe a single episode using OpenAI Whisper API."""
     audio_path = AUDIO_DIR / f"{episode['slug']}.mp3"
@@ -62,51 +107,81 @@ def transcribe_episode(client: OpenAI, episode: dict, terms: dict[str, str]) -> 
         return f"[MISS] Episode {episode['number']}: {episode['title']} (audio not found)"
 
     try:
-        print(f"[SEND] Episode {episode['number']}: {episode['title']} ({audio_path.stat().st_size / 1024 / 1024:.1f} MB)...")
+        file_size_mb = audio_path.stat().st_size / (1024 * 1024)
+        needs_splitting = file_size_mb > MAX_FILE_SIZE_MB
 
-        # Use verbose_json to get timestamps
-        with open(audio_path, "rb") as audio_file:
-            response = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                response_format="verbose_json",
-                timestamp_granularities=["segment"],
-            )
+        if needs_splitting:
+            print(f"[SPLIT] Episode {episode['number']}: {episode['title']} ({file_size_mb:.1f} MB -> splitting)...")
+            chunks = split_audio(audio_path, MAX_FILE_SIZE_MB)
+            print(f"  Split into {len(chunks)} chunks")
+        else:
+            print(f"[SEND] Episode {episode['number']}: {episode['title']} ({file_size_mb:.1f} MB)...")
+            chunks = [audio_path]
 
+        all_segments = []
+        time_offset = 0.0
+        total_duration = 0.0
+
+        for i, chunk_path in enumerate(chunks):
+            if needs_splitting:
+                print(f"  Transcribing chunk {i+1}/{len(chunks)}...")
+
+            with open(chunk_path, "rb") as audio_file:
+                response = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    response_format="verbose_json",
+                    timestamp_granularities=["segment"],
+                )
+
+            chunk_duration = response.duration if hasattr(response, 'duration') and response.duration else 0
+
+            if hasattr(response, 'segments') and response.segments:
+                for segment in response.segments:
+                    start = (segment.start if hasattr(segment, 'start') else segment['start']) + time_offset
+                    text = segment.text if hasattr(segment, 'text') else segment['text']
+                    all_segments.append({"start": start, "text": text.strip()})
+            elif hasattr(response, 'text') and response.text:
+                all_segments.append({"start": time_offset, "text": response.text.strip()})
+
+            time_offset += chunk_duration
+            total_duration += chunk_duration
+
+        # Clean up temp chunks
+        if needs_splitting:
+            for chunk in chunks:
+                if chunk != audio_path:
+                    chunk.unlink(missing_ok=True)
+                    chunk.parent.rmdir() if not list(chunk.parent.iterdir()) else None
+
+        # Build markdown output
         lines = []
         lines.append("---")
         lines.append(f'title: "{episode["title"]}"')
         lines.append(f"episode: {episode['number']}")
         lines.append(f'topic: "{episode["topic"]}"')
         lines.append(f'date: "{episode["date"]}"')
-        if hasattr(response, 'duration') and response.duration:
-            lines.append(f'duration: "{format_timestamp(response.duration)}"')
-        lines.append(f'language: "{response.language if hasattr(response, "language") and response.language else "en"}"')
+        if total_duration > 0:
+            lines.append(f'duration: "{format_timestamp(total_duration)}"')
+        lines.append('language: "en"')
         lines.append("---")
         lines.append("")
         lines.append(f"# Episode {episode['number']}: {episode['title']}")
         lines.append("")
         lines.append(f"**Topic:** {episode['topic']}  ")
         lines.append(f"**Date:** {episode['date']}  ")
-        if hasattr(response, 'duration') and response.duration:
-            lines.append(f"**Duration:** {format_timestamp(response.duration)}")
+        if total_duration > 0:
+            lines.append(f"**Duration:** {format_timestamp(total_duration)}")
         lines.append("")
         lines.append("---")
         lines.append("")
         lines.append("## Transcript")
         lines.append("")
 
-        if hasattr(response, 'segments') and response.segments:
-            for segment in response.segments:
-                timestamp = format_timestamp(segment.start if hasattr(segment, 'start') else segment['start'])
-                text = segment.text if hasattr(segment, 'text') else segment['text']
-                text = fix_game_terms(text.strip(), terms)
-                lines.append(f"**[{timestamp}]** {text}")
-                lines.append("")
-        else:
-            # Fallback: just use the full text
-            text = fix_game_terms(response.text.strip(), terms)
-            lines.append(text)
+        for segment in all_segments:
+            timestamp = format_timestamp(segment["start"])
+            text = fix_game_terms(segment["text"], terms)
+            lines.append(f"**[{timestamp}]** {text}")
             lines.append("")
 
         output_path.write_text("\n".join(lines))
@@ -124,20 +199,19 @@ def main():
         print("Set it with: export OPENAI_API_KEY='your-key-here'")
         sys.exit(1)
 
+    # Check for ffmpeg
+    try:
+        subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
+    except FileNotFoundError:
+        print("Error: ffmpeg not found. Install with: brew install ffmpeg")
+        sys.exit(1)
+
     client = OpenAI(api_key=api_key)
 
     with open(EPISODES_JSON) as f:
         episodes = json.load(f)
 
-    # Check for audio files - handle files >25MB by checking size
-    available = []
-    for ep in episodes:
-        audio_path = AUDIO_DIR / f"{ep['slug']}.mp3"
-        if audio_path.exists():
-            size_mb = audio_path.stat().st_size / (1024 * 1024)
-            if size_mb > 25:
-                print(f"[WARN] Episode {ep['number']}: {ep['title']} is {size_mb:.1f} MB (>25MB API limit). Will need splitting.")
-            available.append(ep)
+    available = [ep for ep in episodes if (AUDIO_DIR / f"{ep['slug']}.mp3").exists()]
 
     if not available:
         print("No audio files found. Run download-episodes.sh first.")
@@ -145,8 +219,14 @@ def main():
 
     terms = load_game_terms()
 
+    # Calculate stats
+    total_size = sum((AUDIO_DIR / f"{ep['slug']}.mp3").stat().st_size for ep in available)
+    oversized = sum(1 for ep in available if (AUDIO_DIR / f"{ep['slug']}.mp3").stat().st_size > MAX_FILE_SIZE_MB * 1024 * 1024)
+
     print(f"Transcribing {len(available)} episodes with OpenAI Whisper API...")
-    print(f"Estimated cost: ~${len(available) * 0.20:.2f}")
+    print(f"Total audio: {total_size / (1024*1024*1024):.1f} GB")
+    print(f"Episodes needing splitting (>{MAX_FILE_SIZE_MB}MB): {oversized}")
+    print(f"Estimated cost: ~${total_size / (1024*1024) * 0.006 / 60 * 30:.2f}")
     print("=" * 60)
 
     for ep in available:
