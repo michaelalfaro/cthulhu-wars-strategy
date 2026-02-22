@@ -43,3 +43,6 @@ next-env.d.ts
 # audio files
 content/transcripts/audio/
 *.mp3
+
+# python virtual environment
+.venv/
