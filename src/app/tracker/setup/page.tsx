@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { nanoid } from "nanoid";
 import { FactionPicker } from "@/components/tracker/FactionPicker";
-import { MAPS, EXPANSIONS } from "@/data/faction-data";
+import { MAPS, EXPANSIONS, FACTION_MAP } from "@/data/faction-data";
 import { saveSession, createDefaultPlayers } from "@/lib/tracker-session";
 
 function SetupForm() {
@@ -83,7 +83,10 @@ function SetupForm() {
           <div className="space-y-2">
             {factions.map((fId, i) => (
               <div key={fId} className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full shrink-0" />
+                <div
+                  className="h-3 w-3 rounded-full shrink-0"
+                  style={{ backgroundColor: FACTION_MAP[fId]?.color ?? "#666" }}
+                />
                 <input
                   type="text"
                   value={names[i] ?? ""}

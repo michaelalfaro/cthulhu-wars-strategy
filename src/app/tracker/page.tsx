@@ -102,10 +102,14 @@ export default function TrackerHubPage() {
                   href={`/tracker/${s.id}`}
                   className="rounded bg-void-lighter px-3 py-1.5 text-xs font-medium text-bone transition-colors hover:bg-void-lighter/80"
                 >
-                  Resume
+                  {s.completedAt ? "View" : "Resume"}
                 </Link>
                 <button
-                  onClick={() => handleDelete(s.id)}
+                  onClick={() => {
+                    if (window.confirm("Delete this session? This cannot be undone.")) {
+                      handleDelete(s.id);
+                    }
+                  }}
                   className="rounded px-3 py-1.5 text-xs text-bone-muted/60 transition-colors hover:text-red-400"
                 >
                   Delete

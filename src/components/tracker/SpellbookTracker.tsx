@@ -21,7 +21,7 @@ export function SpellbookTracker({ spellbooks, labels, color, onToggle }: Spellb
           }`}
           style={checked ? { backgroundColor: color } : undefined}
         >
-          {labels[i]?.slice(0, 2) ?? i + 1}
+          {labels[i] ?? i + 1}
         </button>
       ))}
     </div>

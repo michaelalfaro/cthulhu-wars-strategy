@@ -46,7 +46,8 @@ export default function TrackerPage() {
   }, [session]);
 
   function handleEndGame() {
-    dispatch({ type: "END_GAME" });
+    const completed = { ...session, completedAt: new Date().toISOString() };
+    saveSession(completed);
     router.push("/tracker");
   }
 

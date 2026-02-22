@@ -36,6 +36,7 @@ export function loadSessionIndex(): string[] {
 }
 
 export function saveSessionIndex(ids: string[]): void {
+  if (typeof window === "undefined") return;
   localStorage.setItem(INDEX_KEY, JSON.stringify(ids));
 }
 
@@ -50,6 +51,7 @@ export function loadSession(id: string): TrackerSession | null {
 }
 
 export function saveSession(session: TrackerSession): void {
+  if (typeof window === "undefined") return;
   localStorage.setItem(sessionKey(session.id), JSON.stringify(session));
   const index = loadSessionIndex();
   if (!index.includes(session.id)) {
@@ -58,6 +60,7 @@ export function saveSession(session: TrackerSession): void {
 }
 
 export function deleteSession(id: string): void {
+  if (typeof window === "undefined") return;
   localStorage.removeItem(sessionKey(id));
   const index = loadSessionIndex();
   saveSessionIndex(index.filter((i) => i !== id));
