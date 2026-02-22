@@ -13,6 +13,7 @@ import {
   TranscriptReference,
   SetupChecklist,
   GameSetupChecklist,
+  FactionSelector,
 } from "@/components/guide";
 
 const mdxComponents = {
@@ -23,6 +24,7 @@ const mdxComponents = {
   TranscriptReference,
   SetupChecklist,
   GameSetupChecklist,
+  FactionSelector,
 };
 
 interface GuidePageProps {

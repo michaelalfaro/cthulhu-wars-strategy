@@ -7,6 +7,7 @@ import {
   TranscriptReference,
   SetupChecklist,
   GameSetupChecklist,
+  FactionSelector,
 } from "@/components/guide";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -18,6 +19,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     TranscriptReference,
     SetupChecklist,
     GameSetupChecklist,
+    FactionSelector,
     ...components,
   };
 }
