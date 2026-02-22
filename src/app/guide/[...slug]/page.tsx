@@ -4,6 +4,21 @@ import {
   getGuideChapter,
   getAllGuideChapters,
 } from "@/lib/content";
+import {
+  FactionHeader,
+  UnitStatBlock,
+  SpellbookChecklist,
+  MatchupTable,
+  TranscriptReference,
+} from "@/components/guide";
+
+const mdxComponents = {
+  FactionHeader,
+  UnitStatBlock,
+  SpellbookChecklist,
+  MatchupTable,
+  TranscriptReference,
+};
 
 interface GuidePageProps {
   params: Promise<{ slug: string[] }>;
@@ -80,7 +95,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
       </header>
 
       <div className="mdx-content">
-        <MDXRemote source={chapter.content} />
+        <MDXRemote source={chapter.content} components={mdxComponents} />
       </div>
     </article>
   );
