@@ -53,6 +53,22 @@ export function getGuideSectionChapters(section: string): GuideChapter[] {
     .filter(Boolean) as GuideChapter[];
 }
 
+export function getAllGuideSections(): string[] {
+  if (!fs.existsSync(GUIDE_DIR)) return [];
+
+  return fs
+    .readdirSync(GUIDE_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+}
+
+export function getAllGuideChapters(): GuideChapter[] {
+  return getAllGuideSections().flatMap((section) =>
+    getGuideSectionChapters(section)
+  );
+}
+
 export function getTranscript(slug: string): string | null {
   const filePath = path.join(TRANSCRIPT_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
