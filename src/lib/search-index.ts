@@ -21,8 +21,8 @@ const GUIDE_DIR = path.join(process.cwd(), "content", "guide");
 const SECTION_MAP: Record<string, { label: string; urlPrefix: string }> = {
   "01-overview": { label: "Overview", urlPrefix: "overview" },
   "02-factions": { label: "Factions", urlPrefix: "factions" },
-  "03-monsters-terrors": { label: "Monsters & Terrors", urlPrefix: "monsters" },
-  "04-neutral-units": { label: "Neutral Units", urlPrefix: "neutrals" },
+  "03-monsters": { label: "Monsters & Terrors", urlPrefix: "monsters" },
+  "04-neutrals": { label: "Neutral Units", urlPrefix: "neutrals" },
   "05-maps": { label: "Maps", urlPrefix: "maps" },
   "06-goo-packs": { label: "GOO Packs", urlPrefix: "goo-packs" },
   "07-advanced": { label: "Advanced", urlPrefix: "advanced" },

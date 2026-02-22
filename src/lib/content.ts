@@ -21,11 +21,37 @@ export interface GuideChapter {
   section: string;
 }
 
+/** Strip leading "NN-" numeric prefix from a directory name. */
+function stripPrefix(dirName: string): string {
+  return dirName.replace(/^\d+-/, "");
+}
+
+/**
+ * Find the actual directory name for a section slug.
+ * Accepts either "overview" (stripped) or "01-overview" (raw).
+ */
+function findSectionDir(section: string): string | null {
+  if (!fs.existsSync(GUIDE_DIR)) return null;
+
+  const dirs = fs
+    .readdirSync(GUIDE_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+
+  // Exact match (raw directory name passed in)
+  if (dirs.includes(section)) return section;
+  // Prefix-stripped match (clean slug passed in)
+  return dirs.find((d) => stripPrefix(d) === section) ?? null;
+}
+
 export function getGuideChapter(
   section: string,
   slug: string
 ): GuideChapter | null {
-  const filePath = path.join(GUIDE_DIR, section, `${slug}.mdx`);
+  const sectionDir = findSectionDir(section);
+  if (!sectionDir) return null;
+
+  const filePath = path.join(GUIDE_DIR, sectionDir, `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
 
   const raw = fs.readFileSync(filePath, "utf-8");
@@ -35,13 +61,16 @@ export function getGuideChapter(
     slug,
     frontmatter: data as GuideFrontmatter,
     content,
-    section,
+    // Always store the stripped section name so URLs stay clean
+    section: stripPrefix(sectionDir),
   };
 }
 
 export function getGuideSectionChapters(section: string): GuideChapter[] {
-  const dirPath = path.join(GUIDE_DIR, section);
-  if (!fs.existsSync(dirPath)) return [];
+  const sectionDir = findSectionDir(section);
+  if (!sectionDir) return [];
+
+  const dirPath = path.join(GUIDE_DIR, sectionDir);
 
   return fs
     .readdirSync(dirPath)
@@ -60,7 +89,8 @@ export function getAllGuideSections(): string[] {
     .readdirSync(GUIDE_DIR, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .map((d) => d.name)
-    .sort();
+    .sort()
+    .map(stripPrefix); // Return clean slugs for URL generation
 }
 
 export function getAllGuideChapters(): GuideChapter[] {

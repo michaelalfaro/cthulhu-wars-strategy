@@ -13,6 +13,7 @@ export const navigation: NavItem[] = [
       { title: "Basics", href: "/guide/overview/basics" },
       { title: "Advanced Tactics", href: "/guide/overview/advanced-tactics" },
       { title: "Threat Assessment", href: "/guide/overview/threat-assessment" },
+      { title: "Resources & Aids", href: "/guide/overview/resources" },
     ],
   },
   {
