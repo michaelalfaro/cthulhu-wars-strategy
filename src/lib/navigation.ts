@@ -38,7 +38,7 @@ export const navigation: NavItem[] = [
     href: "/guide/monsters",
     children: [
       { title: "Great Old Ones", href: "/guide/monsters/great-old-ones" },
-      { title: "Monsters by Faction", href: "/guide/monsters/by-faction" },
+      { title: "Neutral Monsters", href: "/guide/monsters/by-faction" },
       { title: "Terrors", href: "/guide/monsters/terrors" },
     ],
   },
