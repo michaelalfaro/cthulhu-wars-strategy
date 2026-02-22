@@ -3,6 +3,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import {
   getGuideChapter,
   getAllGuideChapters,
+  getAllGuideSections,
 } from "@/lib/content";
 import {
   FactionHeader,
@@ -31,18 +32,29 @@ interface GuidePageProps {
 export async function generateStaticParams() {
   const chapters = getAllGuideChapters();
 
-  return chapters.map((chapter) => ({
+  const chapterParams = chapters.map((chapter) => ({
     slug: [chapter.section, chapter.slug],
   }));
+
+  // Also generate params for section index pages (e.g., /guide/faq -> index.mdx)
+  const sections = getAllGuideSections();
+  const sectionParams = sections
+    .filter((section) => getGuideChapter(section, "index") !== null)
+    .map((section) => ({ slug: [section] }));
+
+  return [...chapterParams, ...sectionParams];
 }
 
 export async function generateMetadata({ params }: GuidePageProps) {
   const { slug } = await params;
 
-  if (slug.length !== 2) return {};
-
-  const [section, chapterSlug] = slug;
-  const chapter = getGuideChapter(section, chapterSlug);
+  let chapter;
+  if (slug.length === 1) {
+    // Section index page (e.g., /guide/faq)
+    chapter = getGuideChapter(slug[0], "index");
+  } else if (slug.length === 2) {
+    chapter = getGuideChapter(slug[0], slug[1]);
+  }
 
   if (!chapter) return {};
 
@@ -55,13 +67,13 @@ export async function generateMetadata({ params }: GuidePageProps) {
 export default async function GuidePage({ params }: GuidePageProps) {
   const { slug } = await params;
 
-  // We expect exactly two segments: section and chapter slug
-  if (slug.length !== 2) {
-    notFound();
+  let chapter;
+  if (slug.length === 1) {
+    // Section index page (e.g., /guide/faq -> 08-faq/index.mdx)
+    chapter = getGuideChapter(slug[0], "index");
+  } else if (slug.length === 2) {
+    chapter = getGuideChapter(slug[0], slug[1]);
   }
-
-  const [section, chapterSlug] = slug;
-  const chapter = getGuideChapter(section, chapterSlug);
 
   if (!chapter) {
     notFound();

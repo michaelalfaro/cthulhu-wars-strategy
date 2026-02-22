@@ -14,6 +14,7 @@ export const navigation: NavItem[] = [
       { title: "Advanced Tactics", href: "/guide/overview/advanced-tactics" },
       { title: "Threat Assessment", href: "/guide/overview/threat-assessment" },
       { title: "Resources & Aids", href: "/guide/overview/resources" },
+      { title: "Colour Out of Space", href: "/guide/overview/colour-out-of-space" },
     ],
   },
   {
@@ -84,6 +85,16 @@ export const navigation: NavItem[] = [
     children: [
       { title: "Politics & Diplomacy", href: "/guide/advanced/politics" },
       { title: "Matchup Matrix", href: "/guide/advanced/matchups" },
+    ],
+  },
+  {
+    title: "FAQ",
+    href: "/guide/faq",
+    children: [
+      { title: "General Rules", href: "/guide/faq" },
+      { title: "Faction Interactions", href: "/guide/faq/factions" },
+      { title: "Neutrals & Terrors", href: "/guide/faq/neutrals" },
+      { title: "Maps", href: "/guide/faq/maps" },
     ],
   },
 ];
