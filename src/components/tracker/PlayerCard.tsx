@@ -6,6 +6,7 @@ import type { PlayerState } from "@/lib/tracker-session";
 import type { TrackerAction } from "@/lib/tracker-reducer";
 import { DoomCounter } from "./DoomCounter";
 import { SpellbookTracker } from "./SpellbookTracker";
+import { UnitTracker } from "./UnitTracker";
 
 interface PlayerCardProps {
   player: PlayerState;
@@ -102,6 +103,18 @@ export function PlayerCard({ player, playerIdx, isFirstPlayer, dispatch }: Playe
           color={faction?.color ?? "#c4a84d"}
           onToggle={(bookIdx) =>
             dispatch({ type: "TOGGLE_SPELLBOOK", playerIdx, bookIdx })
+          }
+        />
+      </div>
+
+      {/* Units */}
+      <div className="mt-3 border-t border-void-lighter pt-2">
+        <UnitTracker
+          factionId={player.factionId}
+          units={player.units}
+          factionColor={faction?.color ?? "#666"}
+          onSetUnit={(unitId, count) =>
+            dispatch({ type: "SET_UNITS", playerIdx, unitId, count })
           }
         />
       </div>
