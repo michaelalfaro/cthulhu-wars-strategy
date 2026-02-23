@@ -53,6 +53,9 @@ function SetupForm() {
       round: 1,
       firstPlayer,
       direction,
+      ritualCost: 5,
+      phase: "gather" as const,
+      actionLog: [],
       players: createDefaultPlayers(factions, names),
     };
     saveSession(session);

@@ -19,6 +19,9 @@ const EMPTY_SESSION: TrackerSession = {
   round: 1,
   firstPlayer: 0,
   direction: "cw",
+  ritualCost: 5,
+  phase: "action" as const,
+  actionLog: [],
   players: [],
 };
 

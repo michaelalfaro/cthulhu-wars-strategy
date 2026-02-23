@@ -8,6 +8,14 @@ export interface PlayerState {
   power: number;
   spellbooks: boolean[]; // 6 entries
   elderSigns: number;
+  units: Record<string, number>;
+}
+
+export interface ActionLogEntry {
+  round: number;
+  phase: string;
+  description: string;
+  timestamp: string;
 }
 
 export interface TrackerSession {
@@ -19,6 +27,9 @@ export interface TrackerSession {
   round: number;
   firstPlayer: number;
   direction: "cw" | "ccw";
+  ritualCost: number;
+  phase: "gather" | "action" | "doom";
+  actionLog: ActionLogEntry[];
   players: PlayerState[];
 }
 
@@ -40,11 +51,26 @@ export function saveSessionIndex(ids: string[]): void {
   localStorage.setItem(INDEX_KEY, JSON.stringify(ids));
 }
 
+export function migrateSession(session: TrackerSession): TrackerSession {
+  return {
+    ...session,
+    ritualCost: (session as any).ritualCost ?? 5,
+    phase: (session as any).phase ?? "action",
+    actionLog: (session as any).actionLog ?? [],
+    players: session.players.map((p) => ({
+      ...p,
+      units: (p as any).units ?? {},
+    })),
+  };
+}
+
 export function loadSession(id: string): TrackerSession | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(sessionKey(id));
-    return raw ? (JSON.parse(raw) as TrackerSession) : null;
+    if (!raw) return null;
+    const session = JSON.parse(raw) as TrackerSession;
+    return migrateSession(session);
   } catch {
     return null;
   }
@@ -78,5 +104,6 @@ export function createDefaultPlayers(
     power: 8,
     spellbooks: Array(6).fill(false),
     elderSigns: 0,
+    units: {},
   }));
 }
