@@ -1,15 +1,21 @@
 // src/app/tracker/[sessionId]/page.tsx
 "use client";
 
-import { useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadSession, saveSession } from "@/lib/tracker-session";
 import { trackerReducer } from "@/lib/tracker-reducer";
+import type { TrackerAction } from "@/lib/tracker-reducer";
 import type { TrackerSession } from "@/lib/tracker-session";
+import { undoReducer, type UndoState, type UndoAction } from "@/lib/use-undo-reducer";
 import { FACTION_MAP } from "@/data/faction-data";
 import { PlayerCard } from "@/components/tracker/PlayerCard";
 import { InteractionWarnings } from "@/components/tracker/InteractionWarnings";
+import { DoomTrack } from "@/components/tracker/DoomTrack";
+import { PhaseBar } from "@/components/tracker/PhaseBar";
+import { PhaseActions } from "@/components/tracker/PhaseActions";
+import { ActionLog } from "@/components/tracker/ActionLog";
 
 const EMPTY_SESSION: TrackerSession = {
   id: "",
@@ -25,11 +31,28 @@ const EMPTY_SESSION: TrackerSession = {
   players: [],
 };
 
+const INITIAL_UNDO_STATE: UndoState = {
+  past: [],
+  present: EMPTY_SESSION,
+};
+
+function wrappedUndoReducer(state: UndoState, action: UndoAction): UndoState {
+  return undoReducer(state, action, trackerReducer);
+}
+
 export default function TrackerPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const router = useRouter();
-  const [session, dispatch] = useReducer(trackerReducer, EMPTY_SESSION);
+  const [undoState, rawDispatch] = useReducer(wrappedUndoReducer, INITIAL_UNDO_STATE);
+  const session = undoState.present;
+  const canUndo = undoState.past.length > 0;
   const loaded = useRef(false);
+
+  // Typed dispatch that accepts both TrackerAction and UndoAction
+  const dispatch = useCallback(
+    (action: UndoAction) => rawDispatch(action),
+    []
+  );
 
   // Load session from localStorage on mount
   useEffect(() => {
@@ -40,7 +63,7 @@ export default function TrackerPage() {
     }
     dispatch({ type: "LOAD", session: s });
     loaded.current = true;
-  }, [sessionId, router]);
+  }, [sessionId, router, dispatch]);
 
   // Auto-save on every state change (after initial load)
   useEffect(() => {
@@ -49,9 +72,11 @@ export default function TrackerPage() {
   }, [session]);
 
   function handleEndGame() {
-    const completed = { ...session, completedAt: new Date().toISOString() };
-    saveSession(completed);
-    router.push("/tracker");
+    dispatch({ type: "END_GAME" });
+    // Save after a tick so the reducer processes first
+    setTimeout(() => {
+      router.push("/tracker");
+    }, 100);
   }
 
   if (!session.id) {
@@ -75,8 +100,8 @@ export default function TrackerPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
       {/* Top bar */}
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {/* Round controls */}
           <div className="flex items-center gap-2 rounded-lg border border-void-lighter bg-void-light px-4 py-2">
             <button
@@ -97,6 +122,12 @@ export default function TrackerPage() {
             </button>
           </div>
 
+          {/* Phase bar */}
+          <PhaseBar
+            phase={session.phase}
+            onAdvance={() => dispatch({ type: "ADVANCE_PHASE" })}
+          />
+
           {/* First player */}
           <div className="flex items-center gap-2 text-sm text-bone-muted">
             <div
@@ -109,7 +140,6 @@ export default function TrackerPage() {
                 {session.direction === "cw" ? "↻" : "↺"}
               </span>
             </span>
-            {/* Cycle first player */}
             <button
               onClick={() =>
                 dispatch({
@@ -125,6 +155,15 @@ export default function TrackerPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Undo button */}
+          <button
+            onClick={() => dispatch({ type: "UNDO" })}
+            disabled={!canUndo}
+            className="rounded border border-void-lighter px-3 py-1.5 text-xs text-bone-muted transition-colors hover:text-bone disabled:opacity-30 disabled:cursor-not-allowed"
+            title={canUndo ? `Undo (${undoState.past.length})` : "Nothing to undo"}
+          >
+            ↩ Undo{canUndo && ` (${undoState.past.length})`}
+          </button>
           <Link
             href="/tracker"
             className="rounded border border-void-lighter px-3 py-1.5 text-xs text-bone-muted hover:text-bone"
@@ -140,6 +179,11 @@ export default function TrackerPage() {
         </div>
       </div>
 
+      {/* Doom Track */}
+      <div className="mb-6">
+        <DoomTrack players={session.players} />
+      </div>
+
       {/* Player grid */}
       <div className={`mb-6 grid gap-4 ${gridCols}`}>
         {session.players.map((player, i) => (
@@ -148,13 +192,50 @@ export default function TrackerPage() {
             player={player}
             playerIdx={i}
             isFirstPlayer={i === session.firstPlayer}
-            dispatch={dispatch}
+            dispatch={dispatch as React.Dispatch<TrackerAction>}
           />
         ))}
       </div>
 
+      {/* Phase Actions */}
+      <div className="mb-6">
+        <PhaseActions
+          phase={session.phase}
+          players={session.players}
+          ritualCost={session.ritualCost}
+          onGatherPower={() => dispatch({ type: "GATHER_POWER" })}
+          onScoreDoom={() => dispatch({ type: "SCORE_DOOM" })}
+          onPerformRitual={(playerIdx) =>
+            dispatch({ type: "PERFORM_RITUAL", playerIdx })
+          }
+        />
+      </div>
+
       {/* Interaction warnings */}
-      <InteractionWarnings factionIds={factionIds} />
+      <div className="mb-6">
+        <InteractionWarnings factionIds={factionIds} />
+      </div>
+
+      {/* Action Log */}
+      <div className="mb-6">
+        <ActionLog entries={session.actionLog} />
+      </div>
+
+      {/* Doom-30 Final Scoring Banner */}
+      {session.players.some((p) => p.doom >= 30) && (
+        <div className="rounded-xl border border-gold/40 bg-gold/10 p-4 text-center">
+          <p className="font-heading text-lg font-bold text-gold">
+            🔔 Final Scoring Triggered!
+          </p>
+          <p className="text-sm text-bone-muted">
+            {session.players
+              .filter((p) => p.doom >= 30)
+              .map((p) => p.name)
+              .join(", ")}{" "}
+            reached 30 Doom. Reveal Elder Signs for final tally.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
