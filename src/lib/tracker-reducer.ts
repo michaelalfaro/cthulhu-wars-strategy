@@ -1,5 +1,5 @@
 // src/lib/tracker-reducer.ts
-import type { TrackerSession } from "./tracker-session";
+import type { TrackerSession, ActionLogEntry } from "./tracker-session";
 
 export type TrackerAction =
   | { type: "SET_DOOM"; playerIdx: number; value: number }
@@ -12,7 +12,14 @@ export type TrackerAction =
   | { type: "SET_FIRST_PLAYER"; playerIdx: number }
   | { type: "SET_DIRECTION"; direction: "cw" | "ccw" }
   | { type: "END_GAME" }
-  | { type: "LOAD"; session: TrackerSession };
+  | { type: "LOAD"; session: TrackerSession }
+  | { type: "SET_PHASE"; phase: "gather" | "action" | "doom" }
+  | { type: "ADVANCE_PHASE" }
+  | { type: "GATHER_POWER" }
+  | { type: "SCORE_DOOM" }
+  | { type: "PERFORM_RITUAL"; playerIdx: number }
+  | { type: "SET_UNITS"; playerIdx: number; unitId: string; count: number }
+  | { type: "LOG_ACTION"; description: string };
 
 export function trackerReducer(
   state: TrackerSession,
@@ -68,6 +75,85 @@ export function trackerReducer(
       return { ...state, direction: action.direction };
     case "END_GAME":
       return { ...state, completedAt: new Date().toISOString() };
+
+    case "SET_PHASE":
+      return { ...state, phase: action.phase };
+
+    case "ADVANCE_PHASE": {
+      const phases: Array<"gather" | "action" | "doom"> = ["gather", "action", "doom"];
+      const idx = phases.indexOf(state.phase);
+      const nextIdx = (idx + 1) % phases.length;
+      const nextRound = nextIdx === 0 ? state.round + 1 : state.round;
+      return { ...state, phase: phases[nextIdx], round: nextRound };
+    }
+
+    case "GATHER_POWER": {
+      const players = state.players.map((p) => ({
+        ...p,
+        power: 2 * p.gates,
+      }));
+      return { ...state, players };
+    }
+
+    case "SCORE_DOOM": {
+      const players = state.players.map((p) => ({
+        ...p,
+        doom: p.doom + p.gates,
+      }));
+      const entry: ActionLogEntry = {
+        round: state.round,
+        phase: state.phase,
+        description: `Doom scored: ${state.players.map((p) => `${p.name} +${p.gates}`).join(", ")}`,
+        timestamp: new Date().toISOString(),
+      };
+      return { ...state, players, actionLog: [...state.actionLog, entry] };
+    }
+
+    case "PERFORM_RITUAL": {
+      const p = state.players[action.playerIdx];
+      const players = state.players.map((pl, i) =>
+        i === action.playerIdx
+          ? {
+              ...pl,
+              doom: pl.doom + pl.gates,
+              elderSigns: pl.elderSigns + 1,
+              power: pl.power - state.ritualCost,
+            }
+          : pl
+      );
+      const entry: ActionLogEntry = {
+        round: state.round,
+        phase: state.phase,
+        description: `${p.name} performed Ritual of Annihilation (cost ${state.ritualCost}, +${p.gates} Doom, +1 Elder Sign)`,
+        timestamp: new Date().toISOString(),
+      };
+      return {
+        ...state,
+        players,
+        ritualCost: state.ritualCost + 1,
+        actionLog: [...state.actionLog, entry],
+      };
+    }
+
+    case "SET_UNITS": {
+      const players = state.players.map((p, i) =>
+        i === action.playerIdx
+          ? { ...p, units: { ...p.units, [action.unitId]: Math.max(0, action.count) } }
+          : p
+      );
+      return { ...state, players };
+    }
+
+    case "LOG_ACTION": {
+      const entry: ActionLogEntry = {
+        round: state.round,
+        phase: state.phase,
+        description: action.description,
+        timestamp: new Date().toISOString(),
+      };
+      return { ...state, actionLog: [...state.actionLog, entry] };
+    }
+
     default:
       return state;
   }
