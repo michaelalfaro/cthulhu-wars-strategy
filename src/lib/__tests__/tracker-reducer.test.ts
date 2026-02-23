@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { trackerReducer, type TrackerAction } from "../tracker-reducer";
+import { trackerReducer } from "../tracker-reducer";
 import type { TrackerSession } from "../tracker-session";
 
 function makeSession(overrides?: Partial<TrackerSession>): TrackerSession {

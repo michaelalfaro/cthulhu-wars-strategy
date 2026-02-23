@@ -11,7 +11,7 @@ describe("FACTION_UNITS", () => {
   });
 
   it("every unit has required fields", () => {
-    for (const [factionId, units] of Object.entries(FACTION_UNITS)) {
+    for (const [, units] of Object.entries(FACTION_UNITS)) {
       for (const unit of units) {
         expect(unit.id).toBeTruthy();
         expect(unit.name).toBeTruthy();

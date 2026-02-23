@@ -1,7 +1,7 @@
 // src/app/tracker/setup/page.tsx
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { nanoid } from "nanoid";
 import { FactionPicker } from "@/components/tracker/FactionPicker";
@@ -19,22 +19,23 @@ function SetupForm() {
   const [firstPlayer, setFirstPlayer] = useState(0);
   const [direction, setDirection] = useState<"cw" | "ccw">("cw");
 
+  // Wrapper to keep names array in sync with factions
+  const updateFactions = useCallback((newFactions: string[]) => {
+    setFactions(newFactions);
+    setNames((prev) =>
+      newFactions.map((_, i) => prev[i] ?? `Player ${i + 1}`)
+    );
+  }, []);
+
   // Pre-populate from URL params
   useEffect(() => {
     const f = params.get("factions");
-    if (f) setFactions(f.split(",").filter(Boolean));
+    if (f) updateFactions(f.split(",").filter(Boolean));
     const m = params.get("map");
     if (m) setMap(m);
     const e = params.get("expansions");
     if (e) setExpansions(e.split(",").filter(Boolean));
-  }, [params]);
-
-  // Sync names array length to factions
-  useEffect(() => {
-    setNames((prev) =>
-      factions.map((_, i) => prev[i] ?? `Player ${i + 1}`)
-    );
-  }, [factions]);
+  }, [params, updateFactions]);
 
   function toggleExpansion(id: string) {
     setExpansions((prev) =>
@@ -74,7 +75,7 @@ function SetupForm() {
         <h2 className="mb-3 font-heading text-sm font-semibold uppercase tracking-widest text-gold">
           Factions ({factions.length}/5)
         </h2>
-        <FactionPicker selected={factions} onChange={setFactions} />
+        <FactionPicker selected={factions} onChange={updateFactions} />
       </section>
 
       {/* Player Names */}

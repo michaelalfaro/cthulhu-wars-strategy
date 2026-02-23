@@ -6,11 +6,11 @@ import { FACTION_UNITS } from "@/data/faction-units";
 interface UnitTrackerProps {
   factionId: string;
   units: Record<string, number>;
-  factionColor: string;
+  factionColor?: string;
   onSetUnit: (unitId: string, count: number) => void;
 }
 
-export function UnitTracker({ factionId, units, factionColor, onSetUnit }: UnitTrackerProps) {
+export function UnitTracker({ factionId, units, onSetUnit }: UnitTrackerProps) {
   const [open, setOpen] = useState(false);
   const roster = FACTION_UNITS[factionId] ?? [];
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { migrateSession, type TrackerSession, type PlayerState } from "../tracker-session";
+import { migrateSession, type TrackerSession } from "../tracker-session";
 
 function makeOldSession(): Record<string, unknown> {
   return {

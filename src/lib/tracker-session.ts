@@ -52,14 +52,16 @@ export function saveSessionIndex(ids: string[]): void {
 }
 
 export function migrateSession(session: TrackerSession): TrackerSession {
+  // Cast to partial type to handle sessions saved before new fields were added
+  const s = session as Partial<TrackerSession> & { players: Partial<PlayerState>[] };
   return {
     ...session,
-    ritualCost: (session as any).ritualCost ?? 5,
-    phase: (session as any).phase ?? "action",
-    actionLog: (session as any).actionLog ?? [],
+    ritualCost: s.ritualCost ?? 5,
+    phase: s.phase ?? "action",
+    actionLog: s.actionLog ?? [],
     players: session.players.map((p) => ({
       ...p,
-      units: (p as any).units ?? {},
+      units: (p as Partial<PlayerState>).units ?? {},
     })),
   };
 }

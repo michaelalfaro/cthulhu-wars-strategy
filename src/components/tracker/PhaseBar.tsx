@@ -16,7 +16,6 @@ const PHASE_LABELS: Record<Phase, { label: string; icon: string; color: string }
 const PHASE_ORDER: Phase[] = ["gather", "action", "doom"];
 
 export function PhaseBar({ phase, onAdvance }: PhaseBarProps) {
-  const current = PHASE_LABELS[phase];
   const nextPhase = PHASE_ORDER[(PHASE_ORDER.indexOf(phase) + 1) % PHASE_ORDER.length];
   const isNewRound = nextPhase === "gather";
 
