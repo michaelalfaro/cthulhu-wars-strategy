@@ -12,6 +12,7 @@ export interface GuideFrontmatter {
   color?: string;
   episode?: number;
   description?: string;
+  related?: string[];
 }
 
 export interface GuideChapter {
@@ -103,4 +104,23 @@ export function getTranscript(slug: string): string | null {
   const filePath = path.join(TRANSCRIPT_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
   return fs.readFileSync(filePath, "utf-8");
+}
+
+export function getRelatedChapters(chapter: GuideChapter): GuideChapter[] {
+  const explicit = chapter.frontmatter.related ?? [];
+
+  if (explicit.length > 0) {
+    return explicit
+      .map((ref) => {
+        const [section, slug] = ref.split("/");
+        return getGuideChapter(section, slug);
+      })
+      .filter(Boolean) as GuideChapter[];
+  }
+
+  // Fallback: return up to 3 other chapters from the same section
+  const sectionChapters = getGuideSectionChapters(chapter.section);
+  return sectionChapters
+    .filter((c) => c.slug !== chapter.slug)
+    .slice(0, 3);
 }

@@ -4,6 +4,7 @@ import {
   getGuideChapter,
   getAllGuideChapters,
   getAllGuideSections,
+  getRelatedChapters,
 } from "@/lib/content";
 import {
   FactionHeader,
@@ -15,6 +16,7 @@ import {
   GameSetupChecklist,
   FactionSelector,
 } from "@/components/guide";
+import { RelatedContent } from "@/components/guide/RelatedContent";
 
 const mdxComponents = {
   FactionHeader,
@@ -81,6 +83,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
     notFound();
   }
 
+  const related = getRelatedChapters(chapter);
+
   return (
     <article>
       <header className="mb-8 border-b border-elder-700 pb-6">
@@ -115,6 +119,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
       <div className="mdx-content">
         <MDXRemote source={chapter.content} components={mdxComponents} />
       </div>
+
+      <RelatedContent chapters={related} />
     </article>
   );
 }
