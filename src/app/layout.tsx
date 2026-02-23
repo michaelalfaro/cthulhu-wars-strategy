@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -34,8 +35,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-screen bg-void text-bone antialiased">
+      <body className="min-h-screen bg-void text-bone antialiased pb-16 lg:pb-0">
         {children}
+        <BottomNav />
       </body>
     </html>
   );
