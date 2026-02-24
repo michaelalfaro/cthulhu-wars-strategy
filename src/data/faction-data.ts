@@ -193,5 +193,8 @@ export const EXPANSIONS = [
   { id: "masks-nyarlathotep", name: "Masks of Nyarlathotep" },
   { id: "goo-pack-1", name: "GOO Pack 1" },
   { id: "goo-pack-2", name: "GOO Pack 2" },
+  { id: "goo-pack-3", name: "GOO Pack 3" },
   { id: "goo-pack-4", name: "GOO Pack 4" },
+  { id: "cats", name: "Something About Cats / CATaclysm" },
+  { id: "opener-of-the-way", name: "Opener of the Way" },
 ];
