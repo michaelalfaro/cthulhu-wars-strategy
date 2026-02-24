@@ -63,7 +63,7 @@ describe("faction-strategies", () => {
   });
 
   it("unit counts in rulesReminders are consistent with faction-units", () => {
-    for (const [id, s] of Object.entries(FACTION_STRATEGIES)) {
+    for (const [id, _s] of Object.entries(FACTION_STRATEGIES)) {
       const units = FACTION_UNITS[id];
       if (!units) continue;
       expect(units.length).toBeGreaterThan(0);
