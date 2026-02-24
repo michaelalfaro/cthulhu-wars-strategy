@@ -22,6 +22,12 @@ describe("FACTION_UNITS", () => {
     }
   });
 
+  it("Black Goat Mi-Go max count is 4 (Fungi from Yuggoth)", () => {
+    const miGo = FACTION_UNITS["black-goat"].find((u) => u.id === "mi-go");
+    expect(miGo).toBeDefined();
+    expect(miGo!.max).toBe(4);
+  });
+
   it("every faction has exactly one GOO except Ancients", () => {
     for (const [factionId, units] of Object.entries(FACTION_UNITS)) {
       const goos = units.filter((u) => u.isGOO);

@@ -18,7 +18,7 @@ export const FACTION_UNITS: Record<string, FactionUnit[]> = {
   "black-goat": [
     { id: "acolytes", name: "Acolytes", max: 6, cost: 1, combat: 0 },
     { id: "ghouls", name: "Ghouls", max: 2, cost: 1, combat: 0 },
-    { id: "mi-go", name: "Mi-Go", max: 3, cost: 2, combat: 1 },
+    { id: "mi-go", name: "Mi-Go", max: 4, cost: 2, combat: 1 },
     { id: "dark-young", name: "Dark Young", max: 3, cost: 3, combat: 2 },
     { id: "shub-niggurath", name: "Shub-Niggurath", max: 1, cost: 8, combat: 6, isGOO: true },
   ],
