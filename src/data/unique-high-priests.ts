@@ -3,6 +3,8 @@
 export interface UniqueHighPriest {
   id: string;
   name: string;
+  cost: number;
+  combat: number;
   abilityName: string;
   abilityText: string; // exact game text
   timing: "ongoing" | "pre-battle" | "post-battle";
@@ -14,6 +16,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "asenath-waite",
     name: "Asenath Waite",
+    cost: 3,
+    combat: 0,
     abilityName: "The Thing from Beyond",
     abilityText:
       "After any player's Action, choose any enemy Monster or Cultist on the Map and replace it with one of your own Units of 3 or less cost (except Asenath). Then, Eliminate Asenath.",
@@ -25,6 +29,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "crawford-tillinghast",
     name: "Crawford Tillinghast",
+    cost: 3,
+    combat: 0,
     abilityName: "The Ultra-Violet",
     abilityText:
       "Before any Battle (even if Crawford Tillinghast is not involved), you may Eliminate Crawford Tillinghast and place up to 3 Power cost worth of your Monsters and Cultists from your Pool to the Battle Area, off to one side. These Units participate in the Battle, and can use any Pre-Battle or Post-Battle abilities they may have. But, after the entire Battle is resolved, Eliminate any of these 'extra' Units which survived.",
@@ -36,6 +42,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "ermengarde-stubbs",
     name: "Ermengarde Stubbs",
+    cost: 3,
+    combat: 0,
     abilityName: "A Simple Rustic Maid",
     abilityText:
       "Any player (including you) who declares a Battle in Ermengarde Stubbs's Area immediately loses 1 Doom.",
@@ -47,6 +55,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "herbert-west",
     name: "Herbert West",
+    cost: 3,
+    combat: 0,
     abilityName: "The Reanimator Serum",
     abilityText:
       "After any player's Action, you may Eliminate Herbert West and place up to 3 Acolyte Cultists from your Pool into the Area Herbert West was removed from.",
@@ -58,6 +68,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "keziah-mason",
     name: "Keziah Mason",
+    cost: 3,
+    combat: 0,
     abilityName: "Daemon Heroine",
     abilityText:
       "If Keziah Mason is assigned a Kill or Pain result, add 2 Kills or 2 Pains, respectively, to the total scored against the opponent.",
@@ -69,6 +81,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "lavinia-whateley",
     name: "Lavinia Whateley",
+    cost: 3,
+    combat: 0,
     abilityName: "The Bride",
     abilityText:
       "When you Awaken a Great Old One, you can choose to Eliminate Lavinia Whateley. If you do so, your Great Old One costs 3 Power less to Awaken.",
@@ -80,6 +94,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "joseph-curwen",
     name: "Joseph Curwen",
+    cost: 3,
+    combat: 0,
     abilityName: "Beyond the Spheres",
     abilityText:
       "After any player's Action, you may Eliminate Curwen and either remove your Controlled Gate (but not its Controller) from anywhere on the Map, or place a new Gate in any Area in which you have a Unit.",
@@ -91,6 +107,8 @@ export const UNIQUE_HIGH_PRIESTS: UniqueHighPriest[] = [
   {
     id: "pitpipo",
     name: "Pitpipo",
+    cost: 3,
+    combat: 0,
     abilityName: "The Pit of Despair",
     abilityText:
       "When you take a Kill in Battle, you can assign it to Pitpipo, even if he was not involved in the Battle.",

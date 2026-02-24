@@ -22,6 +22,13 @@ describe("UNIQUE_HIGH_PRIESTS", () => {
     }
   });
 
+  it("all UHPs have cost 3 and combat 0 (per official PDF)", () => {
+    for (const hp of UNIQUE_HIGH_PRIESTS) {
+      expect(hp.cost, `${hp.name} cost`).toBe(3);
+      expect(hp.combat, `${hp.name} combat`).toBe(0);
+    }
+  });
+
   it("should have valid timing values", () => {
     const validTimings = ["ongoing", "pre-battle", "post-battle"];
     for (const hp of UNIQUE_HIGH_PRIESTS) {
