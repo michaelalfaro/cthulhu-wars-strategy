@@ -1,4 +1,4 @@
-import { TERRORS, type Terror } from "@/data/terrors";
+import { TERRORS } from "@/data/terrors";
 
 describe("TERRORS", () => {
   it("should contain all 5 terrors", () => {

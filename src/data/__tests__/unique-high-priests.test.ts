@@ -1,7 +1,4 @@
-import {
-  UNIQUE_HIGH_PRIESTS,
-  type UniqueHighPriest,
-} from "@/data/unique-high-priests";
+import { UNIQUE_HIGH_PRIESTS } from "@/data/unique-high-priests";
 
 describe("UNIQUE_HIGH_PRIESTS", () => {
   it("should contain all 8 unique high priests", () => {

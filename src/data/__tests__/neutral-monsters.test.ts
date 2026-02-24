@@ -1,4 +1,4 @@
-import { NEUTRAL_MONSTERS, type NeutralMonster } from "@/data/neutral-monsters";
+import { NEUTRAL_MONSTERS } from "@/data/neutral-monsters";
 
 describe("NEUTRAL_MONSTERS", () => {
   it("should have at least 15 neutral monster types", () => {

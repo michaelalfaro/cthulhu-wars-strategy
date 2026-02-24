@@ -1,4 +1,4 @@
-import { INDEPENDENT_GOOS, type IndependentGOO } from "@/data/independent-goos";
+import { INDEPENDENT_GOOS } from "@/data/independent-goos";
 
 describe("INDEPENDENT_GOOS", () => {
   it("should contain all 19 independent GOOs", () => {
