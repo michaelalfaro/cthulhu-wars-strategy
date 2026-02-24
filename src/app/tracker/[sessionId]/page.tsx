@@ -1,7 +1,7 @@
 // src/app/tracker/[sessionId]/page.tsx
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadSession, saveSession } from "@/lib/tracker-session";
@@ -47,6 +47,8 @@ export default function TrackerPage() {
   const session = undoState.present;
   const canUndo = undoState.past.length > 0;
   const loaded = useRef(false);
+  const [activeTab, setActiveTab] = useState<"game" | "strategy" | "log">("game");
+  const [strategyPlayerIdx, setStrategyPlayerIdx] = useState(0);
 
   // Typed dispatch that accepts both TrackerAction and UndoAction
   const dispatch = useCallback(
@@ -179,61 +181,89 @@ export default function TrackerPage() {
         </div>
       </div>
 
-      {/* Doom Track */}
-      <div className="mb-6">
-        <DoomTrack players={session.players} />
-      </div>
-
-      {/* Player grid */}
-      <div className={`mb-6 grid gap-4 ${gridCols}`}>
-        {session.players.map((player, i) => (
-          <PlayerCard
-            key={player.factionId}
-            player={player}
-            playerIdx={i}
-            isFirstPlayer={i === session.firstPlayer}
-            dispatch={dispatch as React.Dispatch<TrackerAction>}
-          />
+      {/* Tab bar */}
+      <div className="mb-6 flex gap-1 rounded-lg border border-void-lighter bg-void-light p-1">
+        {(["game", "strategy", "log"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-heading font-semibold uppercase tracking-wider transition-colors ${
+              activeTab === tab
+                ? "bg-void-lighter text-bone"
+                : "text-bone-muted hover:text-bone"
+            }`}
+          >
+            {tab === "game" ? "Game" : tab === "strategy" ? "Strategy" : "Log"}
+          </button>
         ))}
       </div>
 
-      {/* Phase Actions */}
-      <div className="mb-6">
-        <PhaseActions
-          phase={session.phase}
-          players={session.players}
-          ritualCost={session.ritualCost}
-          onGatherPower={() => dispatch({ type: "GATHER_POWER" })}
-          onScoreDoom={() => dispatch({ type: "SCORE_DOOM" })}
-          onPerformRitual={(playerIdx) =>
-            dispatch({ type: "PERFORM_RITUAL", playerIdx })
-          }
-        />
-      </div>
+      {activeTab === "game" && (
+        <>
+          {/* Doom Track */}
+          <div className="mb-6">
+            <DoomTrack players={session.players} />
+          </div>
 
-      {/* Interaction warnings */}
-      <div className="mb-6">
-        <InteractionWarnings factionIds={factionIds} />
-      </div>
+          {/* Player grid */}
+          <div className={`mb-6 grid gap-4 ${gridCols}`}>
+            {session.players.map((player, i) => (
+              <PlayerCard
+                key={player.factionId}
+                player={player}
+                playerIdx={i}
+                isFirstPlayer={i === session.firstPlayer}
+                dispatch={dispatch as React.Dispatch<TrackerAction>}
+              />
+            ))}
+          </div>
 
-      {/* Action Log */}
-      <div className="mb-6">
-        <ActionLog entries={session.actionLog} />
-      </div>
+          {/* Phase Actions */}
+          <div className="mb-6">
+            <PhaseActions
+              phase={session.phase}
+              players={session.players}
+              ritualCost={session.ritualCost}
+              onGatherPower={() => dispatch({ type: "GATHER_POWER" })}
+              onScoreDoom={() => dispatch({ type: "SCORE_DOOM" })}
+              onPerformRitual={(playerIdx) =>
+                dispatch({ type: "PERFORM_RITUAL", playerIdx })
+              }
+            />
+          </div>
 
-      {/* Doom-30 Final Scoring Banner */}
-      {session.players.some((p) => p.doom >= 30) && (
-        <div className="rounded-xl border border-gold/40 bg-gold/10 p-4 text-center">
-          <p className="font-heading text-lg font-bold text-gold">
-            🔔 Final Scoring Triggered!
-          </p>
-          <p className="text-sm text-bone-muted">
-            {session.players
-              .filter((p) => p.doom >= 30)
-              .map((p) => p.name)
-              .join(", ")}{" "}
-            reached 30 Doom. Reveal Elder Signs for final tally.
-          </p>
+          {/* Interaction warnings */}
+          <div className="mb-6">
+            <InteractionWarnings factionIds={factionIds} />
+          </div>
+
+          {/* Doom-30 Final Scoring Banner */}
+          {session.players.some((p) => p.doom >= 30) && (
+            <div className="rounded-xl border border-gold/40 bg-gold/10 p-4 text-center">
+              <p className="font-heading text-lg font-bold text-gold">
+                Final Scoring Triggered!
+              </p>
+              <p className="text-sm text-bone-muted">
+                {session.players
+                  .filter((p) => p.doom >= 30)
+                  .map((p) => p.name)
+                  .join(", ")}{" "}
+                reached 30 Doom. Reveal Elder Signs for final tally.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+
+      {activeTab === "strategy" && (
+        <div className="text-center text-bone-muted py-12">
+          Strategy tab coming soon...
+        </div>
+      )}
+
+      {activeTab === "log" && (
+        <div className="mb-6">
+          <ActionLog entries={session.actionLog} />
         </div>
       )}
     </div>
