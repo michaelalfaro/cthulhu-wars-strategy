@@ -51,3 +51,6 @@ content/transcripts/audio/
 public/sw.js
 public/workbox-*.js
 public/swe-worker-*.js
+
+# git worktrees
+.worktrees/
