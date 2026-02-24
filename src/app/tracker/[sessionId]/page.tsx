@@ -16,6 +16,7 @@ import { DoomTrack } from "@/components/tracker/DoomTrack";
 import { PhaseBar } from "@/components/tracker/PhaseBar";
 import { PhaseActions } from "@/components/tracker/PhaseActions";
 import { ActionLog } from "@/components/tracker/ActionLog";
+import { StrategyTab } from "@/components/tracker/StrategyTab";
 
 const EMPTY_SESSION: TrackerSession = {
   id: "",
@@ -255,9 +256,38 @@ export default function TrackerPage() {
         </>
       )}
 
-      {activeTab === "strategy" && (
-        <div className="text-center text-bone-muted py-12">
-          Strategy tab coming soon...
+      {activeTab === "strategy" && session.players.length > 0 && (
+        <div>
+          {/* Player selector */}
+          {session.players.length > 1 && (
+            <div className="mb-4 flex gap-2">
+              {session.players.map((player, i) => {
+                const f = FACTION_MAP[player.factionId];
+                return (
+                  <button
+                    key={player.factionId}
+                    onClick={() => setStrategyPlayerIdx(i)}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      strategyPlayerIdx === i
+                        ? "border border-bone-muted/40 bg-void-lighter text-bone"
+                        : "border border-void-lighter text-bone-muted hover:text-bone"
+                    }`}
+                  >
+                    <div
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: f?.color }}
+                    />
+                    {player.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <StrategyTab
+            factionId={session.players[strategyPlayerIdx].factionId}
+            allFactionIds={factionIds}
+            playerName={session.players[strategyPlayerIdx].name}
+          />
         </div>
       )}
 
