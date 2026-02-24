@@ -50,7 +50,7 @@ export const FACTION_STRATEGIES: Record<string, FactionStrategy> = {
     rulesReminders: [
       "Submerge: 1 Power from ocean area only. Emerge: 0 Power to any area (including land).",
       "Devolve: instant speed (after any player's action). Only works if Deep Ones are in your pool.",
-      "Devour: eliminates 1 enemy unit before combat dice are rolled. Attacker chooses which unit.",
+      "Devour: pre-battle. Enemy must eliminate 1 of their own monsters or Cultists (enemy's choice, not yours).",
       "Immortal: re-awaken Cthulhu for 4 Power (not 10). Gain 1 Elder Sign each time.",
       "Dreams: 2 Power. Only works if you have Acolytes in your pool. Enemy chooses which Cultist to lose if they have 2+.",
     ],
@@ -77,7 +77,7 @@ export const FACTION_STRATEGIES: Record<string, FactionStrategy> = {
     midGame:
       "Blood Sacrifice is your key transition tool: once per Doom Phase, eliminate 1 of your own Cultists to gain 1 Elder Sign. Start using it every Doom Phase. Summon Shub-Niggurath (8 cost, 6 combat) when you have the Power surplus. She's mainly for the spellbook and as a deterrent — don't throw her into fights recklessly.",
     lateGame:
-      "Ghroth is your finisher. At 4 Fungi, you need to roll 4 or less on a d6 (67% success). On success, every player eliminates 1 Cultist per area — devastating for Acolyte-heavy factions. Time Ghroth for maximum disruption: ideally when opponents have spread their Cultists thin across many areas. Ritual every Doom Phase while Blood Sacrificing for Elder Signs.",
+      "Ghroth is your finisher. At 4 Fungi, you need to roll 4 or less on a d6 (67% success). On success, enemies collectively eliminate Cultists equal to your roll — a roll of 4 forces 4 total Cultist deaths split among opponents. Time Ghroth for maximum disruption. Ritual every Doom Phase while Blood Sacrificing for Elder Signs.",
     keyMistakes: [
       "Recruiting expensive monsters before establishing gate economy",
       "Forgetting Blood Sacrifice is once per Doom Phase (not once per turn)",
@@ -87,10 +87,10 @@ export const FACTION_STRATEGIES: Record<string, FactionStrategy> = {
     ],
     rulesReminders: [
       "Blood Sacrifice: once per Doom Phase. Eliminate 1 of your Cultists → gain 1 Elder Sign.",
-      "Ghroth: 2 Power action. Roll d6 ≤ number of areas with your Fungi. On success, all players eliminate 1 Cultist per area.",
+      "Ghroth: 2 Power action. Roll d6 ≤ number of areas with your Fungi. On success, enemies eliminate Cultists equal to the roll (divided among themselves; 1 min to decide or you choose).",
       "Fungi (Mi-Go): max 4 in your unit pool. They are your Ghroth enablers.",
-      "Fertility Cult: during Gather Power, gain 1 Power per Cultist beyond the first at each gate.",
-      "Thousand Young: when you have 2+ Dark Young in an area, other players' units there cannot move (except Fly).",
+      "Fertility Cult (faction ability): you may summon monsters as an unlimited action (still costs Power, but doesn't use your action).",
+      "Thousand Young: if Shub is in play, Ghouls/Fungi/Dark Young each cost 1 less Power to summon (Ghouls become free).",
     ],
   },
 
@@ -106,28 +106,28 @@ export const FACTION_STRATEGIES: Record<string, FactionStrategy> = {
         "Avatar of Nyarlathotep",
       ],
       notes:
-        "Madness first — it defines how opponents play against you. Thousand Forms for Power economy. Emissary for flexible recruitment. If opponents cluster together, consider Nyarlathotep Rises earlier to exploit mobility. Avatar is a late luxury.",
+        "Emissary + Thousand Forms first — Emissary protects Nyarlathotep (kills → pains), Thousand Forms drains enemy Power. Madness is your biggest political weapon but any order works. Pay 4 and Pay 6 spellbook costs early before the late-game squeeze.",
     },
     opening:
-      "Start anywhere with 3+ adjacent areas for quick expansion. Turn 1: recruit 2 Nightgaunts (1 Power each) and spread them to adjacent areas for gate control. Nightgaunts are cheap and mobile — use them as forward scouts and gate guards. Push for 3 gates quickly. Don't worry about expensive monsters yet. Your spellbook unlock for Madness requires Nyarlathotep on the map, so plan your economy around a turn 2-3 awakening (10 Power).",
+      "Start in South Asia. Turn 1: move an Acolyte out (Flight lets you reach remote areas), build a 2nd gate (3 Power), summon monsters with remaining Power. Push for 2-3 gates quickly. All your units have Flight — they can fly over 2 areas with enemies, making nowhere safe. Plan your economy around a Turn 2 Nyarlathotep awakening (10 Power) — he's your entire strategy.",
     earlyGame:
-      "Once Madness is online, your combat becomes terrifying: Pain results move enemy units to areas you choose, not the defender. This is effectively a teleport-to-danger for your enemies. Use Nightgaunts for cheap combat to trigger Madness. Thousand Forms (gain 1 Power per Nightgaunt on the map during Gather Power) funds your expansion. You are a disruption faction — make other players' plans impossible.",
+      "Once Madness is online, you control every battle on the map: Pain results send enemy units where YOU choose, even in fights you're not in. This is devastating political leverage. Thousand Forms (0-cost action: roll d6, enemies lose that much Power) funds your expansion. Take Emissary to protect Nyarlathotep — kills become pains unless an enemy GOO is present. You are a disruption faction — make other players' plans impossible.",
     midGame:
-      "Recruit Flying Polyps (2 cost, 2 combat) for midgame combat punch. Use Emissary to recruit monsters at a discount or in unusual locations. Nyarlathotep with Flight can strike anywhere on the map in a single action. Identify the biggest threat at the table and use Madness to scatter their forces. You don't need to kill — just displace.",
+      "Recruit Flying Polyps (2 cost, 1 combat) for Invisibility — they exempt enemy units from battle, making your gates very hard to take. Nyarlathotep with Flight can strike anywhere on the map. His combat dice = your spellbooks + enemy's spellbooks (up to 12 dice late game). Identify the biggest threat and use Madness to scatter their forces. You don't need to kill — just displace.",
     lateGame:
-      "Your doom generation is slower than Black Goat or Yellow Sign, so you need to compensate with Elder Signs from Ritual and efficient gate control. Use Hunting Horrors (3 cost, 3 combat) as closers. Madness continues to disrupt enemy positioning in the final rounds. Infiltration can steal a critical gate at the last moment. Time your Ritual of Annihilation carefully — you need every Power point.",
+      "Your win condition is Harbinger: fight enemy GOOs, pain/kill them, and choose 2 Elder Signs per GOO instead of Power. Chain unlimited combat battles across 2-3 GOOs for a burst of 4-6 Elder Signs. Hunting Horrors (3 cost, 2 combat) teleport into any battle via Seek and Destroy for free. Madness lets you pain yourself into adjacent areas to chain fights. Time your Harbinger burst from ~20 Doom to close out the game.",
     keyMistakes: [
       "Awakening Nyarlathotep too early without gate economy to support him",
       "Using Madness defensively instead of offensively — scatter enemy units into each other",
-      "Forgetting Thousand Forms Power bonus — always count your Nightgaunts during Gather",
-      "Over-investing in Hunting Horrors — they're expensive for their combat value",
+      "Forgetting to use Thousand Forms every Action Phase — it's a free action that drains enemy Power",
+      "Resummoning Hunting Horrors unnecessarily — at 3 Power each, assign kills to cheaper units first",
     ],
     rulesReminders: [
-      "Madness: when enemies take Pain results in battle with you, YOU choose where their units go.",
-      "Thousand Forms: gain 1 Power per Nightgaunt on the map during Gather Power phase.",
-      "Emissary: recruit a Monster at -1 cost in any area with your unit (not just gates).",
-      "Nyarlathotep Rises: Nyarlathotep can move to any area on the map as a single move action.",
-      "Nightgaunts cost 1 Power, 1 combat die. Max 3 in pool.",
+      "Madness: after Pain results in ANY battle (even ones you're not in), YOU choose where all pained units retreat to.",
+      "Thousand Forms: 0-cost action (once per Action Phase). Roll d6 — enemies lose that much Power among them. If they can't agree, you gain it instead.",
+      "Emissary of the Outer Gods: post-battle, a Kill on Nyarlathotep becomes Pain instead (unless enemy GOO is in the battle).",
+      "Harbinger: post-battle, if enemy GOO is pained/killed, gain Power = half their awaken cost OR choose 2 Elder Signs per GOO instead.",
+      "Nightgaunts: 1 Power, 0 combat dice, max 3. Cheap bodies to shield Nyarlathotep and fuel Abduct.",
     ],
   },
 
@@ -143,29 +143,29 @@ export const FACTION_STRATEGIES: Record<string, FactionStrategy> = {
         "Gift of the King",
       ],
       notes:
-        "Desecrate first — it's your gate-stealing engine and is dirt cheap. The King in Yellow is free to place and unlocks your faction's area control. Passion turns every combat into Doom. Gift of the King gives 3 free Doom but comes late. Cloud Memory and Shriek are situational — pick based on your opponents.",
+        "Awaken King in Yellow first (4 Power) for Screaming Dead. Awaken Hastur next and ALWAYS take Third Eye — it halves Desecrate cost and adds Elder Signs. Passion early for Power refund on Cultist deaths. Shriek of the Byakhee enables the Hastur hit squad. He Who Is Not To Be Named and Zingaya are situational — pick based on your opponents.",
     },
     opening:
-      "Start anywhere with high gate density — you want to Desecrate quickly. Turn 1: recruit 2-3 Undead (1 Power, 1 combat) and spread to adjacent areas. Undead are your workhorse unit — cheap, disposable, and plentiful (max 6). Place the King in Yellow (4 cost, 0 combat) as soon as possible — he's a spellbook requirement and his area-control abilities define your faction. Push for 3 gates via Desecrate: move an Undead to an enemy gate, Desecrate to flip it.",
+      "Start in Europe. Turn 1: move a Cultist to Arabia, awaken King in Yellow there (4 Power), build a gate (3 Power). The King has 0 combat — protect him with Undead (1 Power each, max 6). DON'T Desecrate yet — wait for Third Eye (requires Hastur). Turn 2: awaken Hastur (10 Power) at the King's gate, take Third Eye. NOW your engine is online: Screaming Dead moves King + all Undead for 1 Power, then Desecrate as your bonus action.",
     earlyGame:
-      "With Desecrate online, you can steal weakly-defended gates for just 1 Power. This makes you the premier land-grab faction. Recruit Byakhee (2 cost, 2 combat) for mobile combat support — they have Flight. Your Doom generation starts slow but ramps: spellbook conditions award 3 free Doom at specific milestones. Use Passion (gain 1 Doom per battle you participate in) to turn every fight into Doom fuel.",
+      "With Third Eye online, every successful Desecrate costs 1 Power and earns an Elder Sign — your primary win condition. Recruit Byakhee (2 cost, scaling combat) for mobile support — use Shriek of the Byakhee to teleport them anywhere. Passion (gain 1 Power when your Cultists are killed/captured) makes your gates deceptively hard to take — opponents pay you for attacking. Spread Cultists to maximize Passion triggers.",
     midGame:
-      "Awaken Hastur (10 cost, 6 combat) when you have the economy. Hastur is a wrecking ball — 6 combat dice plus any spellbook bonuses. With Passion active, every battle Hastur fights generates Doom. Shriek can force enemy units to flee before combat, weakening defensive positions. Build toward your 3 free Doom spellbook milestones. Political leverage is key — threaten Desecrate to extort agreements from weaker players.",
+      "Awaken Hastur (10 cost, combat = Ritual cost) when you have the economy. Take Third Eye immediately — it's your win condition. With Hastur's Vengeance, YOU choose which enemy units take combat results, making him a terrifying deterrent. Use He Who Is Not To Be Named to teleport Hastur to any area with a Cultist, then Shriek of the Byakhee as your bonus action for instant reinforcements. Political leverage is key — threaten Desecrate to extort agreements.",
     lateGame:
-      "Yellow Sign is the fastest Doom rusher in the game. Gift of the King awards 3 free Doom. Combined with 4+ gates, Passion from combat, and Ritual of Annihilation, you can jump 8-10 Doom in a single round. Cloud Memory protects your gates from Dreams and other steal effects. Push for 30 Doom as fast as possible — once opponents realize you're close, they'll gang up.",
+      "Yellow Sign wins through Elder Sign volume — 6-12 Elder Signs from Desecrate + Third Eye can account for half your Doom. Ritual every Doom Phase you can. Use Passion's Power refund to stay economically viable even under attack. The Hastur hit squad (He Who Is Not To Be Named + Shriek + Vengeance) can snipe enemy GOOs to remove threats. Push for 30 Doom — once opponents realize your Elder Sign pile is massive, they'll gang up.",
     keyMistakes: [
-      "Ignoring Desecrate — it's your best Power-to-Doom converter through cheap gate theft",
+      "Desecrating before Third Eye is online — without it, Desecrate costs 2 Power and gives no Elder Signs",
       "Holding off King in Yellow — place him early even though he has 0 combat",
-      "Fighting without Passion online — battles without Doom payoff waste your Power",
-      "Spreading Undead too thin — they need to be in groups to Desecrate effectively",
-      "Not tracking your Doom milestones for free Doom awards",
+      "Leaving the King exposed without an Undead/Byakhee escort — he has 0 combat and will die",
+      "Spreading Undead too thin — you need more units in an area than your die roll for Desecrate to succeed",
+      "Not taking Third Eye when awakening Hastur — it's your win condition, take it every time",
     ],
     rulesReminders: [
-      "Desecrate: 1 Power. Place a Desecration token in an area with your Undead. If enemies leave, you gain the Gate.",
-      "King in Yellow: 4 cost, 0 combat. Cannot be killed — only Pained (retreated). His area presence enables multiple spellbooks.",
-      "Passion: gain 1 Doom each time you are involved in a battle (attacking or defending).",
-      "Hastur: 10 cost, 6 combat. Standard GOO stats. Awakening requires King in Yellow on the map.",
-      "Undead: max 6. They are recruitable in any area with your units, not just gates.",
+      "Desecrate: 2 Power (1 with Third Eye). Roll d6 ≤ your unit count in the area to succeed. On success, place token + gain Elder Sign (with Third Eye). Win or lose, place a free unit costing ≤2.",
+      "King in Yellow: 4 cost, 0 combat. Fragile — protect him with Undead/Byakhee. Screaming Dead moves him + all Undead for 1 Power, then grants a bonus action.",
+      "Passion: when your Cultists are eliminated by an enemy (kills, captures), gain 1 Power total. Spread Cultists across areas to maximize triggers.",
+      "Hastur: 10 cost. Combat dice = current Ritual of Annihilation cost (starts ~5, increases). Vengeance: you choose which enemy units receive combat results.",
+      "Third Eye: if Hastur is in play, Desecrate costs 1 instead of 2 AND each success gains an Elder Sign. This is your win condition — get it ASAP.",
     ],
   },
 };
