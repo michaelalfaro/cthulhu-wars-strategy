@@ -20,7 +20,7 @@ export const INTERACTION_TIPS: InteractionTip[] = [
   {
     id: "ys-gift",
     factions: ["yellow-sign"],
-    text: "Yellow Sign can Gift Doom via spellbook. If they have 3+ Gates and their GOO, watch the Doom track closely — they can accelerate to 30 faster than expected.",
+    text: "Yellow Sign accelerates Doom faster than any other faction. Desecrate steals Gates cheaply, Passion scores Doom from combat, and their spellbook conditions award 3 free Doom. Once they have 3+ Gates and Hastur, the Doom track can jump from 20 to 30 in a single round.",
     severity: "critical",
   },
   {
@@ -68,7 +68,7 @@ export const INTERACTION_TIPS: InteractionTip[] = [
   {
     id: "bg-ghroth",
     factions: ["black-goat"],
-    text: "Ghroth sacrifices all Cultists on the map (including yours!) for Doom. Watch your Cultist count when Black Goat is approaching Spellbook completion.",
+    text: "Ghroth (2 Power): Roll d6 \u2264 areas with Fungi to succeed. On success, every player eliminates 1 Cultist from each area. At 4 Fungi (max) you need a 4 or less. Not guaranteed \u2014 but devastating when it hits.",
     severity: "critical",
   },
 
