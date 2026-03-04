@@ -53,6 +53,13 @@ const sections = [
     icon: "🔗",
     color: "#4a9ac7",
   },
+  {
+    title: "Master Rulebook",
+    description: "The official Cthulhu Wars rulebook — complete rules reference (PDF).",
+    href: "/CW_Rulebook-Final_OS.pdf",
+    icon: "📜",
+    color: "#8b6914",
+  },
 ];
 
 export default function Home() {

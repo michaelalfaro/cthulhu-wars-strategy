@@ -7,6 +7,7 @@ const tabs = [
   { href: "/guide/overview/basics", label: "Guide", icon: "📖" },
   { href: "/guide/factions/great-cthulhu", label: "Factions", icon: "🐙" },
   { href: "/tracker", label: "Tracker", icon: "🎲" },
+  { href: "/CW_Rulebook-Final_OS.pdf", label: "Rulebook", icon: "📜" },
   { href: "/", label: "Home", icon: "🏠" },
 ];
 
